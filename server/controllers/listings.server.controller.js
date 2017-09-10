@@ -39,9 +39,6 @@ exports.create = function(req, res) {
 
 /* Show the current listing */
 exports.read = function(req, res) {
-  /* send back the listing as json from the request */
-  console.log("TEST") ;
-  
   res.json(req.listing);
 };
 
@@ -49,6 +46,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
   var listing = req.listing;
 
+  // Update individual fields
   listing.code = req.body.code ;
   listing.name = req.body.name ;
   
@@ -65,26 +63,39 @@ exports.update = function(req, res) {
     if(err) {
       console.log(err) ;
       res.status(400).send(err) ;
-    } else res.json(listing );
+    } else res.json(listing) ;
   }) ;
-  
-  
-  
-  /* Replace the article's properties with the new properties found in req.body */
-  /* save the coordinates (located in req.results if there is an address property) */
-  /* Save the article */
 };
 
 /* Delete a listing */
 exports.delete = function(req, res) {
   var listing = req.listing;
-
-  /* Remove the article */
+  
+  // Find the listing of interest
+  Listing.find(listing, function(err, listings) {
+		if (err) {
+      console.log(err) ;
+      res.status(404).send(err) ;
+    } ;
+		
+    // Remove it from the database
+		listings[0].remove(function(err) {
+			if (err) {
+        console.log(err) ;
+        res.status(404).send(err) ;
+      } else res.json(listing) ;
+		}) ;
+	}) ;
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
-  /* Your code here */
+  Listing.find({}, function(err, listings) {
+		if (err) {
+      console.log(err) ;
+      res.status(404).send(err) ;
+    } else res.json(listings) ;
+	}) ;
 };
 
 /* 
